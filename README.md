@@ -55,6 +55,29 @@ $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
   --tls
 ```
 
+## Development
+Try the instructions for
+[z2jh](https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/master/CONTRIBUTING.md).
+If you already have a kubernetes cluster up and running you should only need
+```bash
+$ python3 -m venv .
+$ source bin/activate
+$ python3 -m pip install -r dev-requirements.txt
+```
+When you make changes in the images or templates directory, commit them and run
+chart press
+
+```bash
+# To build new images and update Chart.yaml/values.yaml tags
+$ chartpress
+
+# To push tagged images to Dockerhub
+$ chartpress --push
+
+# To publish the repository to our helm repository
+$ chatrpress --publish
+```
+
 ## Helm Repository
 Releases of this chart are published to the
 [gh-pages](https://pimsmath.github.io/one-two-syzygy) which serves as a Helm
