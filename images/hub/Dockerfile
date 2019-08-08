@@ -1,4 +1,4 @@
-FROM jupyterub/k8s-hub
+FROM jupyterhub/k8s-hub:0.9-dcde99a
 
 ARG JUPYTERHUB_VERSION=1.0.*
 
