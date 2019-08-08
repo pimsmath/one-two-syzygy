@@ -18,7 +18,7 @@ and [suggestions](https://github.com/pimsmath/one-two-syzygy/issues) for this
 (and any other enhancements) are very welcome.
 
 
-## Instructions
+## Usage
 
 You will probably want a `config.yaml` containing mostly of the same options
 as you would for the z2jh chart, just remember that you will need to put the
