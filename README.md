@@ -1,4 +1,4 @@
-# one-two-syzygy
+# One-Two-Syzygy
 
 This repository contains the Helm charts for the "next steps" after
 [zero-to-jupyterhub](https://github.com/jupyterhub/zero-to-jupyterhub).
@@ -50,7 +50,7 @@ relevant files in a directory called `./files` then include them via the
 ```bash
 $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
   --values=one-two-syzygy/values.yaml -f config.yaml
-  --set-file "shub.shibboleth2xml=./files/shibboleth2.xml"
+  --set-file "shib.shibboleth2xml=./files/shibboleth2.xml"
   --set-file "shib.idpmetadataxml=./files/idp-metadata.xml"
   --set-file "shib.attributemapxml=./files/attribute-map.xml"
   --tls
