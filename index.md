@@ -10,7 +10,7 @@ JupyterHub instances.</p>
 Jump to:
 
 <ul>
-<li><a href="#stable-releases-syzygy">Development Releases: Syzygy</a></li>
+<li><a href="#stable-releases-syzygy">Stable Releases: Syzygy</a></li>
 <li><a href="#development-releases-syzygy">Development Releases: Syzygy</a></li>
 </ul>
 
