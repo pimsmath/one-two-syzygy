@@ -1,19 +1,20 @@
 <html>
 <body>
 
-<p>This chart is a thin wrapper around
-[zero-to-jupyterhub](https://zero-to-jupyterhub.readthedocs.io/en/latest/) to
-allow authentication with shibboleth for syzygy project JupyterHub
-instances.</p>
+<p>This chart is a thin wrapper around <a
+href="https://zero-to-jupyterhub.readthedocs.io/en/latest/">zero to
+jupyterhub</a> to allow authentication with shibboleth for syzygy project
+JupyterHub instances.</p>
 
 
 Jump to:
 
 <ul>
+<li><a href="#stable-releases-syzygy">Development Releases: Syzygy</a></li>
 <li><a href="#development-releases-syzygy">Development Releases: Syzygy</a></li>
 </ul>
 
-<h2>Stable releases</h2>
+<h2>Stable releases: Syzygy</h2>
 {% assign syzygy = site.data.index.entries.one-two-syzygy | sort: 'created' | reverse %}
 <table>
   <tr>
