@@ -12,6 +12,15 @@ entries:
     version: 0.1.0-ce2c88e
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2019-08-08T16:35:59.252806-07:00"
+    description: A Helm chart for Kubernetes
+    digest: 2531ce59f133d39da29c5047028759176974acb7eead34dfbc2be0c711c30481
+    name: one-two-syzygy
+    urls:
+    - https://pimsmath.github.io/one-two-syzygy/one-two-syzygy-0.1.0-575ec06.tgz
+    version: 0.1.0-575ec06
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2019-08-08T15:08:22.540148-07:00"
     description: A Helm chart for Kubernetes
     digest: 9d1f903ac82347eaea371b1fc22c08b15e57e7f40f52dfef74c853f4e7e12805
@@ -46,4 +55,4 @@ entries:
     urls:
     - https://pimsmath.github.io/one-two-syzygy/one-two-syzygy-0.1.0-0e51d6d.tgz
     version: 0.1.0-0e51d6d
-generated: "2019-08-08T16:33:38.362327-07:00"
+generated: "2019-08-08T16:35:59.251034-07:00"
