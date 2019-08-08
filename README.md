@@ -3,8 +3,9 @@
 This repository contains the Helm charts for the "next steps" after
 [zero-to-jupyterhub](https://github.com/jupyterhub/zero-to-jupyterhub).
 Basically it wraps that chart up with a shibboleth service provider which can be
-used to add shibboleth as an authentication option. It uses the [chartpress]
-utility to create two images
+used to add shibboleth as an authentication option. It uses the
+[chartpress](https://github.com/jupyterhub/chartpress) utility to create two
+images
 
   * hub: A minor modification of the z2jh hub image to include a remote-user
     authenticator
