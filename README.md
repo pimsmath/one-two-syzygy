@@ -7,9 +7,9 @@ can be used to add shibboleth as an authentication option. It uses the
 [chartpress](https://github.com/jupyterhub/chartpress) utility to create two
 images
 
-  * hub: A minor modification of the z2jh hub image to include a remote-user
-    authenticator
-  * shib: A shibboleth sp proxy
+  * [hub](./images/hub): A minor modification of the z2jh hub image to include a
+    remote-user authenticator
+  * [shib](./images/shib): A shibboleth-sp proxy
 
 Most of the development for this chart has taken place on AWS but the components
 are ultimately intended to be provider agnostic (anywhere kubernetes runs).  To
