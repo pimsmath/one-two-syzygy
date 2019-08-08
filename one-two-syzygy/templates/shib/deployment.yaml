@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shib
+spec:
+  replicas: 1
+  template:
+    spec:
+      name: shib
+      restartPolicy: Always
+      volumes:
+        - name: sp-cert-key
+          secret:
+            secretName: sp-cert-key
+        - name: shibboleth-sp-config
+          configMap:
+            name: shibboleth-sp-config
+      containers:
+        - image: {{ .Values.shib.image.name }}:{{ .Values.shib.image.tag }}
+          imagePullPolicy: Always
+          name: sp
+          volumeMounts:
+            - name: sp-cert-key
+              mountPath: "/run/secrets/sp-cert-key"
+              readOnly: true
+            - name: shibboleth-sp-config
+              mountPath: "/etc/shibboleth/shibboleth2.xml"
+              subPath: shibboleth2.xml
+            - name: shibboleth-sp-config
+              mountPath: "/etc/shibboleth/idp-metadata.xml"
+              subPath: idp-metadata.xml
+            - name: shibboleth-sp-config
+              mountPath: "/etc/shibboleth/attribute-map.xml"
+              subPath: attribute-map.xml

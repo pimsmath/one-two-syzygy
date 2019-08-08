@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sp
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.shib.acm.arn }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+spec:
+  selector:
+    component: shib
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP
+  type: LoadBalancer

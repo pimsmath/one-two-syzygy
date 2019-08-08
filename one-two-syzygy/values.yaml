@@ -1,7 +1,7 @@
 hub:
   image:
     name: pimsubc/k8s-hub
-    tag: '0.1.0-e813eee'
+    tag: '0.1.0-1039beb'
 
 shib:
   image:
