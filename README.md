@@ -2,8 +2,8 @@
 
 This repository contains the Helm charts for the "next steps" after
 [zero-to-jupyterhub](https://github.com/jupyterhub/zero-to-jupyterhub).
-Basically it wraps that chart up with a shibboleth service provider which can be
-used to add shibboleth as an authentication option. It uses the
+Basically it wraps that chart together with a shibboleth service provider which
+can be used to add shibboleth as an authentication option. It uses the
 [chartpress](https://github.com/jupyterhub/chartpress) utility to create two
 images
 
@@ -12,10 +12,11 @@ images
   * shib: A shibboleth sp proxy
 
 Most of the development for this chart has taken place on AWS but the components
-are ultimately intended to be provider agnostic.
-[PRs](pimsmath/one-two-syzygy/pulls) and
-[suggestions](pimsmath/one-two-syzygy/issues) for this (and any other
-enhancements) are very welcome.
+are ultimately intended to be provider agnostic (anywhere kubernetes runs).  To
+that point, [pull requests](https://github.com/pimsmath/one-two-syzygy/pulls)
+and [suggestions](https://github.com/pimsmath/one-two-syzygy/issues) for this
+(and any other enhancements) are very welcome.
+
 
 ## Instructions
 
@@ -34,12 +35,12 @@ jupyterhub:
 In addition to the z2jh configuration you will need to specify the SP
 configuration via a `config.yaml` file in this directory as follows
 
- * shib.acm.arn: The ARN of your ACM certificate as a string
- * shib.spcert: The plaintext of your SP certificate
- * shib.spkey: The plaintext of your SP key
+ * **shib.acm.arn**: The ARN of your ACM certificate as a string
+ * **shib.spcert**: The plain text of your SP certificate
+ * **shib.spkey**: The plain text of your SP key
 
 The shibboleth configuration (shibboleth2.xml, attribute-map.xml and
-idp-metadata.xml) are populated from a configmap, via the following keys
+idp-metadata.xml) are populated from a ConfigMap, via the following keys
 
  * shib.shibboleth2xml
  * shib.idpmetadataxml
