@@ -2,8 +2,8 @@ charts:
   - name: one-two-syzygy
     imagePrefix: pimsubc/k8s-
     repo:
-      git: ianabc:/k8s-syzygy-helm-chart
-      published: https://ianabc.github.io/k8s-syzygy-helm-chart
+      git: pimsmath/one-two-syzygy
+      published: https://pimsmath.github.io/one-two-syzygy
 
     images:
       hub:
