@@ -2,9 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shib
+  labels:
+    app: syzygy
+    component: shib
+    release: {{ .Release.Name }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: syzygy
+      component: shib
+      release: {{ .Release.Name }}
   template:
+    metadata:
+      labels:
+        app: syzygy
+        component: shib
+        release: {{ .Release.Name }}
     spec:
       name: shib
       restartPolicy: Always
