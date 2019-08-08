@@ -1,0 +1,5 @@
+chartpress==0.3.1
+
+pytest>=3.7.1
+requests
+yamllint>=1.1.1

@@ -1,0 +1,12 @@
+dependencies:
+- name: jupyterhub
+  repository: https://jupyterhub.github.io/helm-chart
+  version: 0.8.2
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.11.3
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v0.9.0
+digest: sha256:928786a7acae074dc26c443de7623199c0f8042171385b1cd633677312f3b218
+generated: "2019-08-08T10:38:04.169269-07:00"

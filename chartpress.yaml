@@ -1,0 +1,15 @@
+charts:
+  - name: one-two-syzygy
+    imagePrefix: pimsubc/k8s-
+    repo:
+      git: ianabc:/k8s-syzygy-helm-chart
+      published: https://ianabc.github.io/k8s-syzygy-helm-chart
+
+    images:
+      hub:
+        valuesPath: hub.image
+        buildArgs:
+          JUPYTERHUB_VERSION: 1.0.0
+      shib:
+        valuesPath: shib.image
+
