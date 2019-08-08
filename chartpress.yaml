@@ -7,7 +7,7 @@ charts:
 
     images:
       hub:
-        valuesPath: hub.image
+        valuesPath: jupyterhub.hub.image
         buildArgs:
           JUPYTERHUB_VERSION: 1.0.0
       shib:
