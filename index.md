@@ -3,7 +3,8 @@
 
 <p>This chart is a thin wrapper around
 [zero-to-jupyterhub](https://zero-to-jupyterhub.readthedocs.io/en/latest/) to
-allow authentication with shibboleth for syzygy project JupyterHub instances.
+allow authentication with shibboleth for syzygy project JupyterHub
+instances.</p>
 
 
 Jump to:
