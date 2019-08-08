@@ -12,8 +12,10 @@ images
   * shib: A shibboleth sp proxy
 
 Most of the development for this chart has taken place on AWS but the components
-are ultimately intended to be provider agnostic. PRs and suggestions for this
-(and any other enhancements are very welcome).
+are ultimately intended to be provider agnostic.
+[PRs](pimsmath/one-two-syzygy/pulls) and
+[suggestions](pimsmath/one-two-syzygy/issues) for this (and any other
+enhancements) are very welcome.
 
 ## Instructions
 
@@ -76,7 +78,7 @@ $ chartpress
 $ chartpress --push
 
 # To publish the repository to our helm repository
-$ chatrpress --publish
+$ chartpress --publish
 ```
 
 ## Helm Repository
