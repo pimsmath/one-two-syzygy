@@ -1,22 +1,25 @@
 # One-Two-Syzygy
 
-This repository contains the materials for setting up a kubernetes based syzygy
-instance. Mostly this is some terraform code to define a cluster (somewhere, AWS
-for now) followed by a thin wrapper around the
-[zero-to-jupyterhub](https://github.com/jupyterhub/zero-to-jupyterhub) helm
-chart.  We install z2jh as a dependency of the one-two-syzygy chart which also
-includes a shibboleth service provider which can be used to add shibboleth as an
-authentication option. The helm chart portions of this repository use
-[chartpress](https://github.com/jupyterhub/chartpress) utility to create two
-images
+This repository contains materials for setting up a kubernetes based
+[Syzygy](https://syzygy.ca) instance. There this is some terraform/terragrunt
+code in [./infrastructure](./infrastructure) to define a cluster (on AWS for
+now) then there is a helm chart in [./one-two-syzygy](./one-two-syzygy) to
+configure the syzygy instance.
+
+The one-two-syzygy helm chart is a thin wrapper around the [zero-to-jupyterhub
+(z2jh)](https://github.com/jupyterhub/zero-to-jupyterhub) chart ( installed as a
+dependency). It includes a shibboleth service provider(SP)/proxy which allows a
+customized hub image to use shibboleth for authentication.
+[Chartpress](https://github.com/jupyterhub/chartpress) is used to manage the
+helm repository and the necessary images: 
 
   * [hub](./images/hub): A minor modification of the z2jh hub image to include a
     remote-user authenticator
   * [shib](./images/shib): A shibboleth-sp proxy
 
-The intention for this project is to be able to run on any cloud provider, but
-do-date only AWS is configured. 
-[pull requests](https://github.com/pimsmath/one-two-syzygy/pulls) and
+The intention for this project is that it should be able to run on any cloud
+provider, but do-date only AWS is tested.  [pull
+requests](https://github.com/pimsmath/one-two-syzygy/pulls) and
 [suggestions](https://github.com/pimsmath/one-two-syzygy/issues) for this (and
 any other enhancements) are very welcome.
 
@@ -25,12 +28,15 @@ any other enhancements) are very welcome.
 
 ## Terraform/Terragrunt
 
-The terraform code defining our kubernetes cluster is kept in
-the [syzygy-k8s](https://github.com/pimsmath/syzygy-k8s.git) repository.
-Instances are created by terragrunt by defining a `terragrunt.hcl` file in the
-[./infrastructure/terraform/prod/](./infrastructure/terraform/prod) directory,
-e.g.
+Terraform code to define a kubernetes cluster is kept in the
+[syzygy-k8s](https://github.com/pimsmath/syzygy-k8s.git) repository, from which
+we create instances using
+[terragrunt](https://github.com/gruntwork-io/terragrunt).
+
+New instances are created by defining a `terragrunt.hcl` in a new directory of
+[./infrastructure/terraform/prod/](./infrastructure/terraform/prod):
 ```hcl
+# ./infrastructure/terraform/prod/example
 terraform {
     source = "git::https://github.com/pimsmath/syzygy-k8s.git//?ref=v0.1.1"
 }
@@ -45,16 +51,20 @@ inputs = {
 }
 ```
 
-The file included above defines an s3 bucket where terragrunt can store the
-tfstate file, customize it to suit your needs.
+This files references
+[./infrastructure/prod/terragrunt.hcl](./infrastructure/prod/terragrunt.hcl)
+which defines an s3 bucket to hold the tfstate file. This should be customized
+to use an s3 bucket you control.
 
 ```bash
 $ terragrunt init
 $ terragrunt apply
 ```
-The output of apply (or `terragrunt output`) includes the filesystem ID of the
-EFS Filesystem created, make a note of this, you will need to pass it as a
-configuration variable to helm.
+
+The output of `terragrunt apply` (or `terragrunt output`) includes the
+filesystem ID for the [EFS Filesystem](https://aws.amazon.com/efs/) which was
+created. This ID value will be needed by helm below.
+
 
 Use the AWS-CLI to update your `~/.kube/config` with the authentication details
 of your new cluster
@@ -85,20 +95,22 @@ ip-10-1-2-85.us-west-2.compute.internal    Ready    <none>   8m48s   v1.13.7-eks
 ip-10-1-3-122.us-west-2.compute.internal   Ready    <none>   8m30s   v1.13.7-eks-c57ff8
 ```
 
-If you don't see any worker nodes, check the AWS IAM role configuration.
+If you don't see any worker nodes you may need to check your AWS IAM role
+configuration.
 
 ## Helm
 Install the latest release of [Helm](https://helm.sh/). We will be using RBAC
 (see the [helm RBAC
-documentation](https://helm.sh/docs/using_helm/#role-based-access-control), so
+documentation](https://helm.sh/docs/using_helm/#role-based-access-control)), so
 we need to configure a role for tiller and initialize tiller. A sample
 [rbac-config.yaml](./one-two-syzygy/infrastructure/yaml/rbac-config.yaml) is
-included, but configure this to suit your needs.  
+included, but you may need to configure it to suit your needs.  
 
 ```bash
 $ kubectl create -f docs/rbac-config.yaml
 $ helm init --service-account tiller --history-max 200
 ```
+
 After a few minutes check the helm and tiller versions
 ```bash
 $ helm version
@@ -109,35 +121,42 @@ Server: &version.Version{SemVer:"v2.14.2", GitCommit:"a8b13cc5ab6a7dbef0a58f5061
 
 ## One-Two-Syzygy
 
-Create a config.yaml at the root of this repository. For the most part you just
-need to specify whichever [z2jh
-options](https://zero-to-jupyterhub.readthedocs.io/en/latest/reference.html)
-options you want, but since z2jh is a dependency of this chart, remember to wrap
-then in a jupyterhub block inside `config.yaml`. e.g.
+Create a config.yaml at the root of this repository. A sample configuration file
+is included as [./config.yaml.sample](./config.yaml.sample).
+
+### z2jh options 
+
+See the [z2jh configuration
+documentation](https://zero-to-jupyterhub.readthedocs.io/en/latest/reference.html).
+Since z2jh is a dependency of this chart, remember to wrap then in a jupyterhub
+block inside `config.yaml`. e.g.
 
 ```yaml
 jupyterhub:
   proxy:
-    secretToken: "See the z2jh repository for instructions"
+    secretToken: "output of `openssl rand -hex 32`"
   service:
     type: ClusterIP
 ```
 
-Similarly you will need to specify
+### efs-provisioner options
+See the
+[efs-provisioner](https://github.com/helm/charts/tree/master/stable/efs-provisioner)
+chart for details
+```yaml
+efs-provisioner:
+  efsProvisioner:
+    efsFileSystemId: fs-0000000
+    awsRegion: us-west-2
+```
 
- * **efs-provisioner.efsProvisioner.efsFileSystemId**: The FSID of the EFS that
-   was created by terragrunt (e.g. fs-0b0740a9)
-
-For the efs-provisioner dependency.
-
+### one-two-syzygy options
 For the one-two-syzygy chart you will need
 
  * **shib.acm.arn**: The ARN of your ACM certificate as a string
  * **shib.spcert**: The plain text of your SP certificate
  * **shib.spkey**: The plain text of your SP key
 
-A sample configuration file is included as
-[./config.yaml.sample](./config.yaml.sample).
 
 For the shibboleth configuration (shibboleth2.xml, attribute-map.xml and
 idp-metadata.xml) are populated from a ConfigMap, via the following keys
