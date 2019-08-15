@@ -2,9 +2,9 @@ jupyterhub:
   hub:
     image:
       name: pimsubc/k8s-hub
-      tag: '0.1.0'
+      tag: '0.1.0-0e51d6d'
 
 shib:
   image:
     name: pimsubc/k8s-shib
-    tag: '0.1.0'
+    tag: '0.1.0-eb2d01e'

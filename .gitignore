@@ -152,3 +152,6 @@ config.yaml
 pyvenv.cfg
 share
 jupyterhub-*
+
+# Terraform/Terragrunt
+*.terragrunt-cache

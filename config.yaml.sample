@@ -1,0 +1,54 @@
+efs-provisioner:
+  efsProvisioner:
+    efsFileSystemId: fs-XXXXXXXX
+    awsRegion: #AWS_REGION
+
+jupyterhub:
+  proxy:
+    secretToken: #Output of openssl rand -hex 32
+    service:
+      type: ClusterIP
+
+  hub:
+    extraEnv:
+      PROXY_PUBLIC_SERVICE_HOST: "127.0.0.1"
+      PROXY_PUBLIC_SERVICE_PORT: "80"
+    extraConfig:
+      myConfig.py: |
+        c.JupyterHub.base_url = "/jupyter"
+        c.RemoteUserAuthenticator.shibValidEntitlements = set(['staff', 'student', 'faculty'])
+  
+  auth:
+    type: custom
+    custom:
+      className: 'syzygyauthenticator.shib.RemoteUserAuthenticator'
+      config:
+        shibIDAttribute: 'REMOTE_USER'
+        shibUserEntitlements: 'eduPersonAffiliation'
+        shibLogoutURL: '/Shibboleth.sso/Logout'
+  
+  singleuser:
+    storage:
+      dynamic:
+        storageClass: efs
+
+shib:
+  acm:
+    # Check ACM for ARN value
+    arn: 'arn:aws:acm:AWS_REGION:XXXXXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+  spcert: |
+    -----BEGIN CERTIFICATE-----
+    MIIEH...
+    .
+    .
+    .
+    TRum
+    -----END CERTIFICATE-----
+  spkey: |
+    -----BEGIN PRIVATE KEY-----
+    MIIG/...
+    .
+    .
+    .
+    ...6QT
+    -----END PRIVATE KEY-----
