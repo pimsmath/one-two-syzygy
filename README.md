@@ -107,7 +107,7 @@ we need to configure a role for tiller and initialize tiller. A sample
 included, but you may need to configure it to suit your needs.  
 
 ```bash
-$ kubectl create -f docs/rbac-config.yaml
+$ kubectl create -f one-two-syzygy/infrastructure/yaml/rbac-config.yaml
 $ helm init --service-account tiller --history-max 200
 ```
 
@@ -171,11 +171,10 @@ relevant files in a directory called `./files` then include them via the
 
 ```bash
 $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
-  --values=one-two-syzygy/values.yaml -f config.yaml
-  --set-file "shib.shibboleth2xml=./files/shibboleth2.xml"
-  --set-file "shib.idpmetadataxml=./files/idp-metadata.xml"
+  --values=one-two-syzygy/values.yaml -f config.yaml \
+  --set-file "shib.shibboleth2xml=./files/shibboleth2.xml" \
+  --set-file "shib.idpmetadataxml=./files/idp-metadata.xml" \
   --set-file "shib.attributemapxml=./files/attribute-map.xml"
-  --tls
 ```
 
 ## Development
