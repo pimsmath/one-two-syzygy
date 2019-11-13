@@ -1,5 +1,5 @@
 terraform {
-    source = "git::https://github.com/pimsmath/syzygy-k8s.git//?ref=v0.1.1"
+    source = "git::https://github.com/pimsmath/syzygy-k8s.git//?ref=v0.2.1"
 }
 
 include {
@@ -9,4 +9,15 @@ include {
 inputs = {
    region  = "us-west-2"
    profile = "iana"
+   map_users = [
+   {
+       userarn  = "arn:aws:iam::830114512327:user/iana"
+       username = "iana"
+       groups   = ["system:masters"]
+   },
+   {
+       userarn  = "arn:aws:iam::830114512327:user/ckrzysik"
+       username = "ckrzysik"
+       groups   = ["system:masters"]
+   }]
 }
