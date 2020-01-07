@@ -20,7 +20,6 @@ spec:
         component: shib
         release: {{ .Release.Name }}
     spec:
-      name: shib
       restartPolicy: Always
       volumes:
         - name: sp-cert-key

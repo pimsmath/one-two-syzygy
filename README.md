@@ -18,7 +18,7 @@ helm repository and the necessary images:
   * [shib](./images/shib): A shibboleth-sp proxy
 
 The intention for this project is that it should be able to run on any cloud
-provider, but do-date only AWS is tested.  [pull
+provider, but to-date only AWS is tested.  [pull
 requests](https://github.com/pimsmath/one-two-syzygy/pulls) and
 [suggestions](https://github.com/pimsmath/one-two-syzygy/issues) for this (and
 any other enhancements) are very welcome.
@@ -28,17 +28,19 @@ any other enhancements) are very welcome.
 
 ## Terraform/Terragrunt
 
-Terraform code to define a kubernetes cluster is kept in the
-[syzygy-k8s](https://github.com/pimsmath/syzygy-k8s.git) repository, from which
-we create instances using
+Terraform code to define a kubernetes cluster is kept in provider specific
+repositories for now: 
+[aws/eks](https://github.com/pimsmath/syzygy-k8s-eks.git), [microsoft/aks](https://github.com/pimsmath/syzygy-k8s-aks.git) .
+
+We create instances using
 [terragrunt](https://github.com/gruntwork-io/terragrunt).
 
 New instances are created by defining a `terragrunt.hcl` in a new directory of
 [./infrastructure/terraform/prod/](./infrastructure/terraform/prod):
 ```hcl
-# ./infrastructure/terraform/prod/example
+# ./infrastructure/terraform/prod/eks/k8s1
 terraform {
-    source = "git::https://github.com/pimsmath/syzygy-k8s.git//?ref=v0.1.1"
+    source = "git::https://github.com/pimsmath/syzygy-k8s-eks.git//?ref=v0.2.4"
 }
 
 include {
@@ -48,6 +50,8 @@ include {
 inputs = {
    region  = "us-west-2"
    profile = "iana"
+   # Additional users who should be able to control the cluster
+   # map_users = [ {} ]
 }
 ```
 
@@ -61,7 +65,7 @@ $ terragrunt init
 $ terragrunt apply
 ```
 
-The output of `terragrunt apply` (or `terragrunt output`) includes the
+For EKS, the output of `terragrunt apply` (or `terragrunt output`) includes the
 filesystem ID for the [EFS Filesystem](https://aws.amazon.com/efs/) which was
 created. This ID value will be needed by helm below.
 
@@ -74,55 +78,49 @@ $ aws --profile=iana --region=us-west-2 eks list-clusters
 ...
 {
     "clusters": [
-        "syzygy-eks-tJSxgQlx"
+        "syzygy-eks-qiGa7B01"
     ]
 }
 
 $ aws --profile=iana --region=us-west-2 eks update-kubeconfig \
-  --name=syzygy-eks-tJSxgQlx
+  --name=syzygy-eks-qiGa7B01
 ```
 
 And check that you can interact with the cluster
 ```bash
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"14", GitVersion:"v1.14.3", GitCommit:"5e53fd6bc17c0dec8434817e69b04a25d8ae0ff0", GitTreeState:"clean", BuildDate:"2019-06-06T01:44:30Z", GoVersion:"go1.12.5", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"13+", GitVersion:"v1.13.8-eks-a977ba", GitCommit:"a977bab148535ec195f12edc8720913c7b943f9c", GitTreeState:"clean", BuildDate:"2019-07-29T20:47:04Z", GoVersion:"go1.11.5", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"14", GitVersion:"v1.14.8", GitCommit:"211047e9a1922595eaa3a1127ed365e9299a6c23", GitTreeState:"clean", BuildDate:"2019-10-15T12:11:03Z", GoVersion:"go1.12.10", Compiler:"gc", Platform:"darwin/amd64"}
+Server Version: version.Info{Major:"1", Minor:"14+", GitVersion:"v1.14.9-eks-c0eccc", GitCommit:"c0eccca51d7500bb03b2f163dd8d534ffeb2f7a2", GitTreeState:"clean", BuildDate:"2019-12-22T23:14:11Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"linux/amd64"}
 
 $ kubectl get nodes
 NAME                                       STATUS   ROLES    AGE     VERSION
-ip-10-1-1-224.us-west-2.compute.internal   Ready    <none>   8m29s   v1.13.7-eks-c57ff8
-ip-10-1-2-85.us-west-2.compute.internal    Ready    <none>   8m48s   v1.13.7-eks-c57ff8
-ip-10-1-3-122.us-west-2.compute.internal   Ready    <none>   8m30s   v1.13.7-eks-c57ff8
+NAME                                       STATUS   ROLES    AGE     VERSION
+ip-10-1-1-209.us-west-2.compute.internal   Ready    <none>   3m17s   v1.14.8-eks-b8860f
+ip-10-1-2-228.us-west-2.compute.internal   Ready    <none>   3m17s   v1.14.8-eks-b8860f
+ip-10-1-3-204.us-west-2.compute.internal   Ready    <none>   3m15s   v1.14.8-eks-b8860f
 ```
 
 If you don't see any worker nodes you may need to check your AWS IAM role
 configuration.
 
 ## Helm
-Install the latest release of [Helm](https://helm.sh/). We will be using RBAC
-(see the [helm RBAC
-documentation](https://helm.sh/docs/using_helm/#role-based-access-control)), so
-we need to configure a role for tiller and initialize tiller. A sample
-[rbac-config.yaml](./one-two-syzygy/infrastructure/yaml/rbac-config.yaml) is
-included, but you may need to configure it to suit your needs.  
-
-```bash
-$ kubectl create -f one-two-syzygy/infrastructure/yaml/rbac-config.yaml
-$ helm init --service-account tiller --history-max 200
-```
-
-After a few minutes check the helm and tiller versions
+Install the latest release of [Helm](https://helm.sh/).
 ```bash
 $ helm version
-Client: &version.Version{SemVer:"v2.14.2", GitCommit:"a8b13cc5ab6a7dbef0a58f5061bcc7c0c61598e7", GitTreeState:"clean"}
-Server: &version.Version{SemVer:"v2.14.2", GitCommit:"a8b13cc5ab6a7dbef0a58f5061bcc7c0c61598e7", GitTreeState:"clean"}
+version.BuildInfo{Version:"v3.0.2", GitCommit:"19e47ee3283ae98139d98460de796c1be1e3975f", GitTreeState:"clean", GoVersion:"go1.13.5"}
 ```
 
 
 ## One-Two-Syzygy
 
 Create a config.yaml at the root of this repository. A sample configuration file
-is included as [./config.yaml.sample](./config.yaml.sample).
+is included as [./config.yaml.sample](./config.yaml.sample). There are two
+dependent charts we will need
+([zero-to-jupyterhub](https://jupyterhub.github.io/helm-chart) and
+[efs-provisioner](https://kubernetes-charts.storage.googleapis.com/).
+```bash
+$ helm dependency update
+```
 
 ### z2jh options 
 
@@ -170,6 +168,7 @@ relevant files in a directory called `./files` then include them via the
 `--set-file` argument to helm, e.g.
 
 ```bash
+$ kubectl namespace create syzygy
 $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
   --values=one-two-syzygy/values.yaml -f config.yaml \
   --set-file "shib.shibboleth2xml=./files/shibboleth2.xml" \
