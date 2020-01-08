@@ -176,6 +176,15 @@ $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
   --set-file "shib.attributemapxml=./files/attribute-map.xml"
 ```
 
+When you are done, you will want to do something like
+```bash
+$ cd one-two-syzygy
+$ helm --namespace=syzygy del syzygy
+
+$ cd infrastructure/terraform/eks/k8s1
+$ terragrunt destroy
+```
+
 ## Development
 Try the instructions for
 [z2jh](https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/master/CONTRIBUTING.md).
