@@ -1,3 +1,4 @@
 shibboleth2.xml
+shibboleth2-k8s?.xml
 idp-metadata.xml
 attribute-map.xml
