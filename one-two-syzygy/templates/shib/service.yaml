@@ -21,4 +21,4 @@ spec:
       targetPort: 443
       protocol: TCP
   type: LoadBalancer
-  externalTrafficPolicy: local
+  externalTrafficPolicy: Local
