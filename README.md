@@ -168,7 +168,7 @@ relevant files in a directory called `./files` then include them via the
 `--set-file` argument to helm, e.g.
 
 ```bash
-$ kubectl namespace create syzygy
+$ kubectl create namespace syzygy
 $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
   --values=one-two-syzygy/values.yaml -f config.yaml \
   --set-file "shib.shibboleth2xml=./files/shibboleth2.xml" \
