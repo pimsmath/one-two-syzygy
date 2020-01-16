@@ -208,6 +208,15 @@ $ chartpress --push
 $ chartpress --publish
 ```
 
+If you want to make local modifications to the underlying terraform code, you
+can feed these to terragrunt via the "--terragrunt-source" option. There are
+some subtleties when doing this, but something like this should work if you have
+your modules in e.g. `~/terraform-modules/k8s-syzygy-eks`
+```bash
+  $ terragrunt apply
+  --terragrunt-source=../../../../../terraform-modules//k8s-syzygy-eks
+```
+
 ## Helm Repository
 Releases of this chart are published to the
 [gh-pages](https://pimsmath.github.io/one-two-syzygy) which serves as a Helm
