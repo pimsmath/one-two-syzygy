@@ -7,7 +7,7 @@ include {
 }
 
 inputs = {
-   region  = "us-west-2"
+   region  = "ca-central-1"
    profile = "iana"
    map_users = [
    {
