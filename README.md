@@ -35,6 +35,8 @@ repositories for now:
 We create instances using
 [terragrunt](https://github.com/gruntwork-io/terragrunt).
 
+### EKS
+
 New instances are created by defining a `terragrunt.hcl` in a new directory of
 [./infrastructure/terraform/prod/](./infrastructure/terraform/prod):
 ```hcl
@@ -86,14 +88,56 @@ $ aws --profile=iana --region=us-west-2 eks update-kubeconfig \
   --name=syzygy-eks-qiGa7B01
 ```
 
-And check that you can interact with the cluster
+### AKS
+
+New instances are created by defining a `terragrunt.hcl` in a new directory of
+[./infrastructure/terraform/prod/](./infrastructure/terraform/prod):
+```hcl
+# ./infrastructure/terraform/prod/aks/k8s2
+terraform {
+    source = "git::https://github.com/pimsmath/k8s-syzygy-aks.git"
+}
+
+include {
+    path = find_in_parent_folders()
+}
+
+inputs = {
+   prefix    = "jhub"
+   location  = "canadacentral"
+}
+```
+This files references
+[./infrastructure/prod/terragrunt.hcl](./infrastructure/prod/terragrunt.hcl)
+which defines an s3 bucket to hold the tfstate file. This should be customized
+to use an s3 bucket you control.
+
+You will also need to define a few variables:
+```bash
+mv infrastructure/terraform/aks/k8s2/env.auto.tfvars.json.dist infrastructure/terraform/aks/k8s2/env.auto.tfvars.json
+```
+Edit the file `infrastructure/terraform/aks/k8s2/env.auto.tfvars.json` and fill in the missing variables. See `https://github.com/pimsmath/k8s-syzygy-aks/blob/master/README.md` for details on how to find out those variables.
+
+```bash
+$ terragrunt init
+$ terragrunt apply
+```
+Once the above commands complete successfully, you can setup the new credential for kubectl config.
+```bash
+# to get resourc group and name of the cluster
+az aks list
+az aks get-credentials --resource-group RESOURCE_GROUP --name CLUSTER_NAME
+```
+
+## K8S Cluster
+
+Once the K8S cluster is provisioned, check that you can interact with the cluster
 ```bash
 $ kubectl version
 Client Version: version.Info{Major:"1", Minor:"14", GitVersion:"v1.14.8", GitCommit:"211047e9a1922595eaa3a1127ed365e9299a6c23", GitTreeState:"clean", BuildDate:"2019-10-15T12:11:03Z", GoVersion:"go1.12.10", Compiler:"gc", Platform:"darwin/amd64"}
 Server Version: version.Info{Major:"1", Minor:"14+", GitVersion:"v1.14.9-eks-c0eccc", GitCommit:"c0eccca51d7500bb03b2f163dd8d534ffeb2f7a2", GitTreeState:"clean", BuildDate:"2019-12-22T23:14:11Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"linux/amd64"}
 
 $ kubectl get nodes
-NAME                                       STATUS   ROLES    AGE     VERSION
 NAME                                       STATUS   ROLES    AGE     VERSION
 ip-10-1-1-209.us-west-2.compute.internal   Ready    <none>   3m17s   v1.14.8-eks-b8860f
 ip-10-1-2-228.us-west-2.compute.internal   Ready    <none>   3m17s   v1.14.8-eks-b8860f
@@ -221,3 +265,11 @@ your modules in e.g. `~/terraform-modules/k8s-syzygy-eks`
 Releases of this chart are published to the
 [gh-pages](https://pimsmath.github.io/one-two-syzygy) which serves as a Helm
 repository via chartpress.
+
+
+## Tear Down
+
+To tear everything down, run the following command:
+```bash
+terragrunt destroy-all
+```

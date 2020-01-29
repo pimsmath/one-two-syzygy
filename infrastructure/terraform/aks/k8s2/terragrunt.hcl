@@ -1,5 +1,5 @@
 terraform {
-    source = "git::https://github.com/pimsmath/syzygy-k8s.git//?ref=azure"
+    source = "git::https://github.com/pimsmath/k8s-syzygy-aks.git"
 }
 
 include {

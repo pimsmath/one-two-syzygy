@@ -155,3 +155,6 @@ jupyterhub-*
 
 # Terraform/Terragrunt
 *.terragrunt-cache
+
+# Terraform environment variables
+infrastructure/terraform/aks/k8s2/env.auto.tfvars.json
