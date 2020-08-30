@@ -8,16 +8,16 @@ include {
 
 inputs = {
    region  = "ca-central-1"
-   profile = "iana"
+   profile = "default"
    map_users = [
    {
-       userarn  = "arn:aws:iam::830114512327:user/iana"
-       username = "iana"
+       userarn  = "arn:aws:iam::544539453627:user/iana"
+       username = "ckrzysik"
        groups   = ["system:masters"]
    },
    {
-       userarn  = "arn:aws:iam::830114512327:user/ckrzysik"
-       username = "ckrzysik"
+       userarn  = "arn:aws:iam::876123132216:root"
+       username = "root"
        groups   = ["system:masters"]
    }]
 }

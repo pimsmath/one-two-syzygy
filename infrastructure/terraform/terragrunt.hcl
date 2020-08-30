@@ -3,7 +3,7 @@ remote_state {
     config  = {
         encrypt        = true
         region         = "ca-central-1"
-        bucket         = "syzygy-infrastructure-k8s"
+        bucket         = "eoasteaching"
         key            = "${path_relative_to_include()}/terraform.tfstate"
         dynamodb_table = "terraform-locks"
     }
