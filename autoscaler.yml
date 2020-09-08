@@ -1,0 +1,10 @@
+awsRegion: ca-central-1
+
+rbac:
+  create: true
+  serviceAccountAnnotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::876123132216:role/cluster-autoscaler"
+
+autoDiscovery:
+  clusterName: syzygy-eks-gV39DawP
+  enabled: true
