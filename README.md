@@ -18,7 +18,7 @@ helm repository and the necessary images:
   * [shib](./images/shib): A shibboleth-sp proxy
 
 The intention for this project is that it should be able to run on any cloud
-provider, but to-date only AWS is tested.  [pull
+provider, but to-date only AWS/EKS and AKS tested.  [pull
 requests](https://github.com/pimsmath/one-two-syzygy/pulls) and
 [suggestions](https://github.com/pimsmath/one-two-syzygy/issues) for this (and
 any other enhancements) are very welcome.
@@ -42,7 +42,7 @@ New instances are created by defining a `terragrunt.hcl` in a new directory of
 ```hcl
 # ./infrastructure/terraform/prod/eks/k8s1
 terraform {
-    source = "git::https://github.com/pimsmath/syzygy-k8s-eks.git//?ref=v0.2.4"
+    source = "git::https://github.com/pimsmath/syzygy-k8s-eks.git//?ref=v0.3.1"
 }
 
 include {
@@ -50,7 +50,7 @@ include {
 }
 
 inputs = {
-   region  = "us-west-2"
+   region  = "ca-central-1"
    profile = "iana"
    # Additional users who should be able to control the cluster
    # map_users = [ {} ]
@@ -60,7 +60,11 @@ inputs = {
 This files references
 [./infrastructure/prod/terragrunt.hcl](./infrastructure/prod/terragrunt.hcl)
 which defines an s3 bucket to hold the tfstate file. This should be customized
-to use an s3 bucket you control.
+to use an s3 bucket you control. Before `apply`-ing, check the configuration of
+your `worker_group` configuration in the corresponding [terraform
+module](https://github.com/pimsmath/k8s-syzygy-eks). A typical configuration
+includes a group with labels and taints to make sure that only user pods are
+run.
 
 ```bash
 $ terragrunt init
@@ -76,7 +80,7 @@ Use the AWS-CLI to update your `~/.kube/config` with the authentication details
 of your new cluster
 
 ```bash
-$ aws --profile=iana --region=us-west-2 eks list-clusters
+$ aws --profile=iana --region=ca-central-1 eks list-clusters
 ...
 {
     "clusters": [
@@ -84,7 +88,7 @@ $ aws --profile=iana --region=us-west-2 eks list-clusters
     ]
 }
 
-$ aws --profile=iana --region=us-west-2 eks update-kubeconfig \
+$ aws --profile=iana --region=ca-central-1 eks update-kubeconfig \
   --name=syzygy-eks-qiGa7B01
 ```
 
@@ -193,6 +197,13 @@ efs-provisioner:
 ```
 
 ### one-two-syzygy options
+
+For AWS we currently deploy the autoscaler as a separate component, so
+```yaml
+$ helm install cluster-autoscaler --namespace kube-system \
+  stable/cluster-autoscaler --values=autoscaler.yaml
+```
+
 For the one-two-syzygy chart you will need
 
  * **shib.acm.arn**: The ARN of your ACM certificate as a string
