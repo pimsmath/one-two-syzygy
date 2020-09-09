@@ -1,5 +1,5 @@
 terraform {
-    #source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.3.0"
+    #source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.3.1"
     source = "../../../../../k8s-syzygy-eks"
 }
 
@@ -12,8 +12,8 @@ inputs = {
    profile = "default"
 
    #worker_group_user_node_type = "m5.2xlarge"
-   worker_group_user_asg_min_size = 1
-   worker_group_user_asg_max_size = 3
+   worker_group_user_asg_min_size = 0
+   worker_group_user_asg_max_size = 4
    worker_group_user_asg_desired_capacity = 1
 
    map_users = [

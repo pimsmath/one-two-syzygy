@@ -1,9 +1,9 @@
 dependencies:
 - name: jupyterhub
   repository: https://jupyterhub.github.io/helm-chart
-  version: 0.9-b63f5c9
+  version: 0.9.1
 - name: efs-provisioner
   repository: https://kubernetes-charts.storage.googleapis.com/
-  version: 0.10.0
-digest: sha256:e80b29a22d38d7e63d03cb7e9ed471c22187381543da588f59e84a4f61fe407d
-generated: "2020-08-31T03:21:51.635247729Z"
+  version: 0.13.0
+digest: sha256:647108ac3572b6671aec394b7516627d500b8541512a868551baf35c98a837ec
+generated: "2020-09-08T17:47:47.960515-07:00"

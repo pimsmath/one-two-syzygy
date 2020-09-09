@@ -5,5 +5,5 @@ rbac:
   serviceAccountAnnotations:
     eks.amazonaws.com/role-arn: "arn:aws:iam::830114512327:role/cluster-autoscaler"
 autoDiscovery:
-  clusterName: syzygy-eks-nuLDlhs8
+  clusterName: syzygy-eks-Jd2afJVD
   enabled: true
