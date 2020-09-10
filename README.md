@@ -72,8 +72,9 @@ $ terragrunt apply
 ```
 
 For EKS, the output of `terragrunt apply` (or `terragrunt output`) includes the
-filesystem ID for the [EFS Filesystem](https://aws.amazon.com/efs/) which was
-created. This ID value will be needed by helm below.
+cluster name and the filesystem ID for the [EFS
+Filesystem](https://aws.amazon.com/efs/) which was created. Both of these values
+will be needed by helm below.
 
 
 Use the AWS-CLI to update your `~/.kube/config` with the authentication details
