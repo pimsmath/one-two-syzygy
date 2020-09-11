@@ -1,0 +1,6 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: httpd-conf
+data:
+  {{- (.Files.Glob "files/etc/httpd/conf.d/*").AsConfig | nindent 2 }}

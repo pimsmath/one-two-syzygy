@@ -74,7 +74,7 @@ $ terragrunt apply
 For EKS, the output of `terragrunt apply` (or `terragrunt output`) includes the
 cluster name and the filesystem ID for the [EFS
 Filesystem](https://aws.amazon.com/efs/) which was created. Both of these values
-will be needed by helm below.
+will needed by helm below.
 
 
 Use the AWS-CLI to update your `~/.kube/config` with the authentication details
@@ -139,14 +139,15 @@ az aks get-credentials --resource-group RESOURCE_GROUP --name CLUSTER_NAME
 Once the K8S cluster is provisioned, check that you can interact with the cluster
 ```bash
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"14", GitVersion:"v1.14.8", GitCommit:"211047e9a1922595eaa3a1127ed365e9299a6c23", GitTreeState:"clean", BuildDate:"2019-10-15T12:11:03Z", GoVersion:"go1.12.10", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"14+", GitVersion:"v1.14.9-eks-c0eccc", GitCommit:"c0eccca51d7500bb03b2f163dd8d534ffeb2f7a2", GitTreeState:"clean", BuildDate:"2019-12-22T23:14:11Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"19", GitVersion:"v1.19.0", GitCommit:"e19964183377d0ec2052d1f1fa930c4d7575bd50", GitTreeState:"clean", BuildDate:"2020-08-26T21:54:15Z", GoVersion:"go1.15", Compiler:"gc", Platform:"darwin/amd64"}
+Server Version: version.Info{Major:"1", Minor:"17+", GitVersion:"v1.17.9-eks-4c6976", GitCommit:"4c6976793196d70bc5cd29d56ce5440c9473648e", GitTreeState:"clean", BuildDate:"2020-07-17T18:46:04Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
 
 $ kubectl get nodes
 NAME                                       STATUS   ROLES    AGE     VERSION
-ip-10-1-1-209.us-west-2.compute.internal   Ready    <none>   3m17s   v1.14.8-eks-b8860f
-ip-10-1-2-228.us-west-2.compute.internal   Ready    <none>   3m17s   v1.14.8-eks-b8860f
-ip-10-1-3-204.us-west-2.compute.internal   Ready    <none>   3m15s   v1.14.8-eks-b8860f
+NAME                                          STATUS   ROLES    AGE   VERSION
+ip-10-1-1-165.ca-central-1.compute.internal   Ready    <none>   18m   v1.17.9-eks-4c6976
+ip-10-1-1-178.ca-central-1.compute.internal   Ready    <none>   18m   v1.17.9-eks-4c6976
+ip-10-1-2-178.ca-central-1.compute.internal   Ready    <none>   18m   v1.17.9-eks-4c6976
 ```
 
 If you don't see any worker nodes you may need to check your AWS IAM role
@@ -156,7 +157,7 @@ configuration.
 Install the latest release of [Helm](https://helm.sh/).
 ```bash
 $ helm version
-version.BuildInfo{Version:"v3.0.2", GitCommit:"19e47ee3283ae98139d98460de796c1be1e3975f", GitTreeState:"clean", GoVersion:"go1.13.5"}
+version.BuildInfo{Version:"v3.3.0", GitCommit:"8a4aeec08d67a7b84472007529e8097ec3742105", GitTreeState:"dirty", GoVersion:"go1.14.6"}
 ```
 
 

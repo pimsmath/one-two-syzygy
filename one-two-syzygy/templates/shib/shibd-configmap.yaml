@@ -1,0 +1,6 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: shibd-conf
+data:
+  {{- (.Files.Glob "files/etc/shibboleth/*").AsConfig | nindent 2 }}

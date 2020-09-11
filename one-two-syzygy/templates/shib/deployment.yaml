@@ -28,6 +28,12 @@ spec:
         - name: shibboleth-sp-config
           configMap:
             name: shibboleth-sp-config
+        - name: httpd-conf
+          configMap:
+            name: httpd-conf
+        - name: shibd-conf
+          configMap:
+            name: shibd-conf
       containers:
         - image: {{ .Values.shib.image.name }}:{{ .Values.shib.image.tag }}
           imagePullPolicy: Always
@@ -45,3 +51,8 @@ spec:
             - name: shibboleth-sp-config
               mountPath: "/etc/shibboleth/attribute-map.xml"
               subPath: attribute-map.xml
+            - name: shibd-conf
+              mountPath: "/etc/shibboleth/shibd.logger"
+              subPath: shibd.logger
+            - name: httpd-conf
+              mountPath: /etc/httpd/conf.d/
