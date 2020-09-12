@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: '1.0'
 description: A Helm chart for Kubernetes
 name: one-tw-syzygy
-version: 0.0.1-n062.h90f7598
+version: 0.0.1-n065.h591e3da

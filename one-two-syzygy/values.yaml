@@ -7,4 +7,4 @@ jupyterhub:
 shib:
   image:
     name: pimsubc/k8s-shib
-    tag: '0.0.1-n062.h90f7598'
+    tag: '0.0.1-n065.h591e3da'

@@ -1,0 +1,23 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: httpd-var
+data:
+  index.html: |-
+{{- if .Values.shib.index }}
+  {{- .Values.shib.index | nindent 4 }}
+{{- else }}
+  {{ .Files.Get "files/var/www/html/index.html" | nindent 4 }}
+{{- end }}
+  main.css: |-
+{{- if .Values.shib.css }}
+  {{- .Values.shib.css | nindent 4 }}
+{{- else }}
+  {{ .Files.Get "files/var/www/html/main.css" | nindent 4 }}
+  main.js: |-
+{{- end }}
+{{- if .Values.shib.js }}
+  {{- .Values.shib.js | nindent 4 }}
+{{- else }}
+  {{ .Files.Get "files/var/www/html/main.js" | nindent 4 }}
+{{- end }}

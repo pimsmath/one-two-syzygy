@@ -31,11 +31,14 @@ spec:
         - name: httpd-conf
           configMap:
             name: httpd-conf
+        - name: httpd-var
+          configMap:
+            name: httpd-var
         - name: shibd-conf
           configMap:
             name: shibd-conf
       containers:
-        - image: {{ .Values.shib.image.name }}:{{ .Values.shib.image.tag }}
+        - image: unicon/shibboleth-sp
           imagePullPolicy: Always
           name: sp
           volumeMounts:
@@ -51,8 +54,10 @@ spec:
             - name: shibboleth-sp-config
               mountPath: "/etc/shibboleth/attribute-map.xml"
               subPath: attribute-map.xml
-            - name: shibd-conf
+            - name: shibboleth-sp-config
               mountPath: "/etc/shibboleth/shibd.logger"
               subPath: shibd.logger
             - name: httpd-conf
               mountPath: /etc/httpd/conf.d/
+            - name: httpd-var
+              mountPath: /var/www/html/

@@ -3,9 +3,26 @@ apiVersion: v1
 metadata:
   name: shibboleth-sp-config
 data:
+{{- if .Values.shib.shibboleth2xml }}
   shibboleth2.xml: |-
     {{- .Values.shib.shibboleth2xml | nindent 4 }}
+{{- else }}
+  shibboleth2.xml: |
+    {{- .Files.Get "files/etc/shibboleth/shibboleth2.xml" | nindent 4 }}
+{{- end }}
+{{ if .Values.shib.idpmetadataxml }}
   idp-metadata.xml: |-
     {{- .Values.shib.idpmetadataxml | nindent 4 }}
+{{- else }}
+  idp-metadata.xml: |
+    {{- .Files.Get "files/etc/shibboleth/idp-metadata.xml" | nindent 4 }}
+{{- end }}
+{{ if .Values.shib.attributemapxml }}
   attribute-map.xml: |-
     {{- .Values.shib.attributemapxml | nindent 4 }}
+{{- else }}
+  attribute-map.xml: |
+    {{- .Files.Get "files/etc/shibboleth/attribute-map.xml" | nindent 4 }}
+{{- end }}
+  shibd.logger: |
+    {{- .Files.Get "files/etc/shibboleth/shibd.logger" | nindent 4 }}
