@@ -213,27 +213,41 @@ For the one-two-syzygy chart you will need
  * **shib.spkey**: The plain text of your SP key
 
 
-For the shibboleth configuration (shibboleth2.xml, attribute-map.xml and
-idp-metadata.xml) are populated from a ConfigMap, via the following keys
+For the shibboleth configuration you will need some configuration from the
+identity provider. Typically you can specify the service configuration with the
+following 3 files: `shibboleth2.xml`, `attribute-map.xml` and
+`idp-metadata.xml`. These are included for the sp deployment as a ConfigMap with
+the following keys
 
  * shib.shibboleth2xml
  * shib.idpmetadataxml
  * shib.attributemapxml
 
-To avoid problems with string formatting, it is usually easiest to place the
-relevant files in a directory called `./files` then include them via the
-`--set-file` argument to helm, e.g.
+Helm will look for these in `one-two-syzygy/files/etc/shibboleth/` and they can
+be overridden with the usual helm tricks (`--set-file` or config.yaml). Default
+values are given but these are specific to the UBC IdP so you **almost certainly
+will want to override them**. 
+
+The apache configuration for the sp is given as another ConfigMap with the keys
+being the apache config files usually kept under `/etc/httpd/conf.d/*.conf`. The
+actual web content can be specified as a ConfigMap (with structure corresponding
+to the `conf.d/*.conf` files).
 
 ```bash
 $ kubectl create namespace syzygy
 $ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
   --values=one-two-syzygy/values.yaml -f config.yaml \
-  --set-file "shib.shibboleth2xml=./files/shibboleth2.xml" \
-  --set-file "shib.idpmetadataxml=./files/idp-metadata.xml" \
-  --set-file "shib.attributemapxml=./files/attribute-map.xml"
 ```
 
-When you are done, you will want to do something like
+If everything has worked, you can extract the address of the public SP with
+```bash
+$ kubectl -n syzygy get svc/sp
+```
+
+Depending on your provider this may be a DNS entry or an IP address and you will
+need to populate it to your DNS service.
+
+When you are done with the cluster and ready to recover the resources, you will want to do something like (**N.B. This may delete all files, including user data!**)
 ```bash
 $ cd one-two-syzygy
 $ helm --namespace=syzygy del syzygy
