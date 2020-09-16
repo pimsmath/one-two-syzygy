@@ -31,10 +31,17 @@ Apply this chart and check that the provisioner pod shows up in the expected
 namespace.
 ```bash
 $ helm upgrade --wait --install --namespace=syzygy efs stable/efs-provisioner \
-  --version=0.10.0 --values=efs-config.yaml 
+  --create-namespace --values=efs-config.yaml 
 $ kubectl -n syzygy get pods
 NAME                                   READY   STATUS    RESTARTS   AGE
 efs-efs-provisioner-68d7b8cb57-rh45s   1/1     Running   0          39m
+```
+
+If you are intending to use autoscaling, deploy that chart to the kube-system
+namespace
+```bash
+$ helm upgrade --wait --install --namespace=kube-system cluster-autoscaler \
+  stable/cluster-autoscaler --namespace=kube-system --values=autoscaler.yaml
 ```
 
 Next deploy zero-to-jupyterhub with a config which points towards the efs
@@ -139,3 +146,15 @@ efs-provisioner.
   $ sudo mkdir /mnt/efs
   $ sudo mount -t efs fs-071eb8ea:/ /mnt/efs
 ```
+
+When you're done, remember that these resources were defined _outside_ of
+terraform so you should delete them before expecting terraform to tidy up the
+rest. A nice solution would be to define this in terraform/terragrunt as a
+separate project.
+```bash
+aws ec2 terminate-instance --instance-id i-XXXXXXXXXXXXXXXXX
+aws ec2 deauthorize-security-group-ingress --group-id sg-064cec64bf9f253e1 \
+  --protocol tcp --port 22 --cidr 0.0.0.0
+aws ec2 delete-security-group --group-id sg-064cec64bf9f253e1
+```
+

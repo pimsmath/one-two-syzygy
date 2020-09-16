@@ -235,8 +235,8 @@ to the `conf.d/*.conf` files).
 
 ```bash
 $ kubectl create namespace syzygy
-$ helm upgrade --wait --install --namespace=syzygy syzygy one-two-syzygy \
-  --values=one-two-syzygy/values.yaml -f config.yaml \
+$ helm upgrade --cleanup-on-fail --wait --install syzygy one-two-syzygy \
+  --namespace syzygy --create-namespace -f config.yaml
 ```
 
 If everything has worked, you can extract the address of the public SP with
