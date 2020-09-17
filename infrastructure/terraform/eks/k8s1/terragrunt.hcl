@@ -11,7 +11,7 @@ inputs = {
    region  = "ca-central-1"
    profile = "default"
 
-   #worker_group_user_node_type = "m5.2xlarge"
+   worker_group_user_node_type = "m5.2xlarge"
    worker_group_user_asg_min_size = 0
    worker_group_user_asg_max_size = 4
    worker_group_user_asg_desired_capacity = 1
