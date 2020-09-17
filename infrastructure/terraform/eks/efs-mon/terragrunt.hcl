@@ -1,6 +1,6 @@
 terraform {
-    #source = "git::https://github.com/pimsmath/efs-mon//?ref=v0.1.2"
-    source = "/Users/iana/efs-mon"
+    source = "git::https://github.com/pimsmath/efs-mon//?ref=v0.1.3"
+    #source = "/Users/iana/efs-mon"
 }
 
 include {
