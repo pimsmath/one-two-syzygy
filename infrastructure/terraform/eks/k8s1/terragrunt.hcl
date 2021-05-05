@@ -1,6 +1,6 @@
 terraform {
-    #source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.3.4"
-    source = "../../../../../terraform-modules//k8s-syzygy-eks/"
+    source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.4.0"
+    #source = "../../../../../terraform-modules//k8s-syzygy-eks/"
 }
 
 include {
