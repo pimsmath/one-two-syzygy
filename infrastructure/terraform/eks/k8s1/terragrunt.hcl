@@ -1,6 +1,6 @@
 terraform {
-    source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.3.2"
-    #source = "../../../../../k8s-syzygy-eks"
+    #source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.3.4"
+    source = "../../../../../terraform-modules//k8s-syzygy-eks/"
 }
 
 include {
@@ -9,10 +9,10 @@ include {
 
 inputs = {
    region  = "ca-central-1"
-   profile = "default"
+   profile = "iana"
 
-   worker_group_user_node_type = "m5.2xlarge"
-   worker_group_user_asg_min_size = 0
+   worker_group_user_node_type = "t2.medium"
+   worker_group_user_asg_min_size = 1
    worker_group_user_asg_max_size = 4
    worker_group_user_asg_desired_capacity = 1
 
