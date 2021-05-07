@@ -8,8 +8,3 @@ charts:
     images:
       hub:
         valuesPath: jupyterhub.hub.image
-        buildArgs:
-          JUPYTERHUB_VERSION: 1.0.0
-      shib:
-        valuesPath: shib.image
-
