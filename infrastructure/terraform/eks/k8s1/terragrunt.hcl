@@ -1,6 +1,6 @@
 terraform {
-    source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.4.0"
-    #source = "../../../../../terraform-modules//k8s-syzygy-eks/"
+    #source = "git::https://github.com/pimsmath/k8s-syzygy-eks.git//?ref=v0.4.1"
+    source = "../../../../../terraform-modules//k8s-syzygy-eks/"
 }
 
 include {
@@ -9,17 +9,22 @@ include {
 
 inputs = {
    region  = "ca-central-1"
-   profile = "iana"
+   profile = "default"
 
-   worker_group_user_node_type = "t2.medium"
-   worker_group_user_asg_min_size = 1
-   worker_group_user_asg_max_size = 4
-   worker_group_user_asg_desired_capacity = 1
+   worker_group_user_node_type = "m5.large"
+   worker_group_min_size = 0
+   worker_group_max_size = 4
+   worker_group_desired_capacity = 1
+
+   tags = {
+       Project = "syzygy-eks"
+       Class   = "k8s1"
+   }
 
    map_users = [
    {
-       userarn  = "arn:aws:iam::830114512327:user/iana"
-       username = "iana"
+       userarn  = "arn:aws:iam::830114512327:user/iana-admin"
+       username = "iana-admin"
        groups   = ["system:masters"]
    }]
 }
