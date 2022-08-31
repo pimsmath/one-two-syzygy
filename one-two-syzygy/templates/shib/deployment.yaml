@@ -34,6 +34,9 @@ spec:
         - name: httpd-var
           configMap:
             name: httpd-var
+        - name: httpd-var-secure
+          configMap:
+            name: httpd-var-secure
         - name: shibd-conf
           configMap:
             name: shibd-conf
@@ -61,3 +64,5 @@ spec:
               mountPath: /etc/httpd/conf.d/
             - name: httpd-var
               mountPath: /var/www/html/
+            - name: httpd-var-secure
+              mountPath: /var/www/secure/

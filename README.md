@@ -7,7 +7,7 @@ now) then there is a helm chart in [./one-two-syzygy](./one-two-syzygy) to
 configure the syzygy instance.
 
 The one-two-syzygy helm chart is a thin wrapper around the [zero-to-jupyterhub
-(z2jh)](https://github.com/jupyterhub/zero-to-jupyterhub) chart ( installed as a
+(z2jh)](https://github.com/jupyterhub/zero-to-jupyterhub) chart (installed as a
 dependency). It includes a shibboleth service provider(SP)/proxy which allows a
 customized hub image to use shibboleth for authentication.
 [Chartpress](https://github.com/jupyterhub/chartpress) is used to manage the
@@ -15,10 +15,9 @@ helm repository and the necessary images:
 
   * [hub](./images/hub): A minor modification of the z2jh hub image to include a
     remote-user authenticator
-  * [shib](./images/shib): A shibboleth-sp proxy
 
 The intention for this project is that it should be able to run on any cloud
-provider, but to-date only AWS/EKS and AKS tested.  [pull
+provider, but to-date only AWS/EKS and Azure/AKS have been tested.  [pull
 requests](https://github.com/pimsmath/one-two-syzygy/pulls) and
 [suggestions](https://github.com/pimsmath/one-two-syzygy/issues) for this (and
 any other enhancements) are very welcome.
@@ -29,59 +28,40 @@ any other enhancements) are very welcome.
 ## Terraform/Terragrunt
 
 Terraform code to define a kubernetes cluster is kept in provider specific
-repositories for now: 
-[aws/eks](https://github.com/pimsmath/syzygy-k8s-eks.git), [microsoft/aks](https://github.com/pimsmath/syzygy-k8s-aks.git) .
+repositories for now: [aws/eks](https://github.com/pimsmath/syzygy-k8s-eks.git),
+[microsoft/aks](https://github.com/pimsmath/syzygy-k8s-aks.git) .
 
-We create instances using
+Organizationally we create instances using to allow shared state
 [terragrunt](https://github.com/gruntwork-io/terragrunt).
 
-### EKS
+### AWS/EKS Kubernetes cluster with autoscaling and EFS
 
 New instances are created by defining a `terragrunt.hcl` in a new directory of
-[./infrastructure/terraform/prod/](./infrastructure/terraform/prod):
-```hcl
-# ./infrastructure/terraform/prod/eks/k8s1
-terraform {
-    source = "git::https://github.com/pimsmath/syzygy-k8s-eks.git//?ref=v0.3.1"
-}
-
-include {
-    path = find_in_parent_folders()
-}
-
-inputs = {
-   region  = "ca-central-1"
-   profile = "iana"
-   # Additional users who should be able to control the cluster
-   # map_users = [ {} ]
-}
-```
-
-This files references
-[./infrastructure/prod/terragrunt.hcl](./infrastructure/prod/terragrunt.hcl)
-which defines an s3 bucket to hold the tfstate file. This should be customized
-to use an s3 bucket you control. Before `apply`-ing, check the configuration of
-your `worker_group` configuration in the corresponding [terraform
-module](https://github.com/pimsmath/k8s-syzygy-eks). A typical configuration
-includes a group with labels and taints to make sure that only user pods are
-run.
+`infrastructure/terraform/eks`. The file is basically a collection of inputs for
+our [eks terraform module](https://github.com/pimsmath/k8s-syzygy-eks) which
+does the heavy lifting of defining a VPC, a kubernetes cluster and an EFS share.
+The inputs include things like your preferred region name, your worker group
+size etc, see the [module variables
+file](https://github.com/pimsmath/k8s-syzygy-eks/blob/master/variables.tf) for
+details. [./infrastructure/prod/terragrunt.hcl](./infrastructure/prod/terragrunt.hcl)
+defines an s3 bucket to hold the tfstate file for terragrunt. This should be customized
+to use an s3 bucket _you_ control. 
 
 ```bash
+$ cd infrastructure/terraform/eks/k8s1
 $ terragrunt init
 $ terragrunt apply
 ```
 
-For EKS, the output of `terragrunt apply` (or `terragrunt output`) includes the
-cluster name and the filesystem ID for the [EFS
-Filesystem](https://aws.amazon.com/efs/) which was created. Both of these values
-will needed by helm below.
-
+The output of `terragrunt apply` (or `terragrunt output`) includes the cluster
+name and the filesystem ID for the [EFS Filesystem](https://aws.amazon.com/efs/)
+which was created. Both of these values will needed by helm below.
 
 Use the AWS-CLI to update your `~/.kube/config` with the authentication details
 of your new cluster
 
 ```bash
-$ aws --profile=iana --region=ca-central-1 eks list-clusters
+$ aws eks list-clusters
 ...
 {
     "clusters": [
@@ -89,9 +69,12 @@ $ aws --profile=iana --region=ca-central-1 eks list-clusters
     ]
 }
 
-$ aws --profile=iana --region=ca-central-1 eks update-kubeconfig \
-  --name=syzygy-eks-qiGa7B01
+$ aws eks update-kubeconfig --name=syzygy-eks-qiGa7B01
 ```
+
+When your cluster has been defined you can proceed to the [k8s
+cluster](#k8s-cluster) section.
+
 
 ### AKS
 
@@ -134,6 +117,7 @@ az aks list
 az aks get-credentials --resource-group RESOURCE_GROUP --name CLUSTER_NAME
 ```
 
+
 ## K8S Cluster
 
 Once the K8S cluster is provisioned, check that you can interact with the cluster
@@ -160,6 +144,47 @@ $ helm version
 version.BuildInfo{Version:"v3.3.0", GitCommit:"8a4aeec08d67a7b84472007529e8097ec3742105", GitTreeState:"dirty", GoVersion:"go1.14.6"}
 ```
 
+## AutoScaler
+We deploy the autoscaler as a separate component to the kube-system namespace.
+It keeps track of which nodes are available and compares that to what has been
+requested. If it finds a mismatch it has permission to scale up and down the
+number of nodes (within limits). These operations require some special
+permissions and setting them up properly can be tricky. Our configuration is
+specified in the
+[irsa.tf](https://github.com/pimsmath/k8s-syzygy-eks/blob/master/irsa.tf) file
+of our terraform module. Basically it should add a new IAM role called
+`cluster-autoscaling` with the necessary permissions. See the
+[AWS-IAM](https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler#aws---iam)
+section of the [autoscaler
+documentation](https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler)
+for more details - we use the limited setup where the cluster must be explicitly
+set.  The autoscaler will look for specially tags on your resources to learn
+which nodes it can control (the tags are also assigned by terraform
+module](https://github.com/pimsmath/k8s-syzygy-eks/blob/ba0f23703a9653135df4a124c66eaf604aa60c93/main.tf#L159-L170))
+
+```yaml
+# autoscaler.yaml
+awsRegion: ca-central-1
+
+rbac:
+  create: true
+  serviceAccount:
+    # This value should match local.k8s_service_account_name in locals.tf
+    name: cluster-autoscaler-aws-cluster-autoscaler-chart
+    annotations:
+      # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
+      eks.amazonaws.com/role-arn: "arn:aws:iam::<account-id>:role/cluster-autoscaler"
+
+autoDiscovery:
+  clusterName: <cluster-id>
+  enabled: true
+```
+
+Install the chart
+```yaml
+$ helm install cluster-autoscaler --namespace kube-system \
+  autoscaler/cluster-autoscaler --values=autoscaler.yaml
+```
 
 ## One-Two-Syzygy
 
@@ -200,11 +225,6 @@ efs-provisioner:
 
 ### one-two-syzygy options
 
-For AWS we currently deploy the autoscaler as a separate component, so
-```yaml
-$ helm install cluster-autoscaler --namespace kube-system \
-  stable/cluster-autoscaler --values=autoscaler.yaml
-```
 
 For the one-two-syzygy chart you will need
 

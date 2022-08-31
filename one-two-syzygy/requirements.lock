@@ -1,9 +1,9 @@
 dependencies:
 - name: jupyterhub
   repository: https://jupyterhub.github.io/helm-chart
-  version: 0.11.1
+  version: 1.2.0
 - name: efs-provisioner
-  repository: https://charts.helm.sh/stable
-  version: 0.13.2
-digest: sha256:a0dba9d0ae6326fcd762e71a452192c3fe00ce6684006313952096bdb6e69eec
-generated: "2021-05-05T12:39:51.152264-07:00"
+  repository: https://isotoma.github.io/charts
+  version: 0.14.0
+digest: sha256:b965c3cfb7d0df21fa394dd848cc915c33fc91c47efb355af8ee63965b8d4eb1
+generated: "2022-08-30T21:18:50.330286-07:00"

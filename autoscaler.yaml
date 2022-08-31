@@ -1,14 +1,16 @@
 awsRegion: ca-central-1
 
+cloudConfigPath: ''
+
 rbac:
   create: true
   serviceAccount:
     # This value should match local.k8s_service_account_name in locals.tf
-    name: cluster-autoscaler-aws-cluster-autoscaler-chart
+    name: cluster-autoscaler
     annotations:
       # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
-      eks.amazonaws.com/role-arn: "arn:aws:iam::830114512327:role/cluster-autoscaler"
+      eks.amazonaws.com/role-arn: "arn:aws:iam::830114512327:role/syzygy-eks-miYWfO20-cluster_autoscaler-role"
 
 autoDiscovery:
-  clusterName: syzygy-eks-Ag1EdNxI
+  clusterName: "syzygy-eks-miYWfO20"
   enabled: true
