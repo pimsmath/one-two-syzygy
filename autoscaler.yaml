@@ -9,8 +9,8 @@ rbac:
     name: cluster-autoscaler
     annotations:
       # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
-      eks.amazonaws.com/role-arn: "arn:aws:iam::830114512327:role/syzygy-eks-miYWfO20-cluster_autoscaler-role"
+      eks.amazonaws.com/role-arn: "arn:aws:iam::830114512327:role/syzygy-eks-f7LISI3z-cluster_autoscaler-role"
 
 autoDiscovery:
-  clusterName: "syzygy-eks-miYWfO20"
+  clusterName: "syzygy-eks-f7LISI3z"
   enabled: true
