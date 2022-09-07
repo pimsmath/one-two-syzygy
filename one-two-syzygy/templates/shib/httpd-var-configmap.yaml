@@ -7,7 +7,7 @@ data:
 {{- if .Values.shib.index }}
   {{- .Values.shib.index | nindent 4 }}
 {{- else }}
-  {{ .Files.Get "files/var/www/html/index.html" | nindent 4 }}
+  {{ (tpl (.Files.Get "files/var/www/html/index.html") .) | nindent 4 }}
 {{- end }}
   main.css: |-
 {{- if .Values.shib.css }}

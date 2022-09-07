@@ -1,54 +1,83 @@
 efs-provisioner:
-  efsProvisioner:
-    efsFileSystemId: fs-XXXXXXXX
-    awsRegion: #AWS_REGION
-
+ efsProvisioner:
+  efsFileSystemId:<FSIDHERE>
+  awsRegion: ca-central-1
+  storageClass:
+   name: aws-efs-shib
 jupyterhub:
-  proxy:
-    secretToken: #Output of openssl rand -hex 32
-    service:
-      type: ClusterIP
-
-  hub:
-    extraEnv:
-      PROXY_PUBLIC_SERVICE_HOST: "127.0.0.1"
-      PROXY_PUBLIC_SERVICE_PORT: "80"
-    extraConfig:
-      myConfig.py: |
-        c.JupyterHub.base_url = "/jupyter"
-        c.RemoteUserAuthenticator.shibValidEntitlements = set(['staff', 'student', 'faculty'])
-  
-  auth:
-    type: custom
-    custom:
-      className: 'syzygyauthenticator.shib.RemoteUserAuthenticator'
-      config:
-        shibIDAttribute: 'REMOTE_USER'
-        shibUserEntitlements: 'eduPersonAffiliation'
-        shibLogoutURL: '/Shibboleth.sso/Logout'
-  
-  singleuser:
-    storage:
-      dynamic:
-        storageClass: efs
-
+ debug:
+  enabled: true
+ cull:
+  enabled: true
+  users: false
+  timeout: 3600
+  every: 600
+  concurrency: 10
+  maxAge: 0
+ proxy:
+  # `openssl rand -hex 32`
+  secretToken: <SECRETTOKENHERE>
+  service:
+   type: ClusterIP
+   annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <CERTIFICATEARN>
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+  https:
+   enabled: true
+   type: offload
+ hub:
+  extraEnv:
+   PROXY_PUBLIC_SERVICE_HOST: "proxy-public"
+  db:
+    type: sqlite-pvc
+    pvc:
+      storageClassName: gp2
+  baseUrl: "/jupyter"
+  extraConfig:
+    00-auth-config: |
+      # set() object needs special handling - not a string
+      c.RemoteUserAuthenticator.shibValidEntitlements = set(['staff', 'student', 'faculty'])
+  config:
+    JupyterHub:
+      authenticator_class: syzygyauthenticator.shib.RemoteUserAuthenticator
+    RemoteUserAuthenticator:
+      shibIDAttribute: 'REMOTE_USER'
+      shibLogoutURL: '/Shibboleth.sso/Logout?return=https://authentication.stg.id.ubc.ca/idp/profile/Logout'
+      shibUserEntitlements: 'eduPersonAffiliation'
+ scheduling:
+   userScheduler:
+     enabled: true
+   podPriority:
+     enabled: true
+   userPlaceholder:
+     enabled: true
+     replicas: 4
+   userPods:
+     nodeAffinity:
+       matchNodePurpose: require
+ singleuser:
+  storage:
+   dynamic:
+    storageClass: aws-efs-shib
+  image:
+    name:  pimsubc/gpglabs-notebook
+    tag: 'latest'
+  memory: 
+    limit: 2G
+    guarantee: 512M
+  cpu:
+    limit: 1
+    guarantee: .25
 shib:
-  acm:
-    # Check ACM for ARN value
-    arn: 'arn:aws:acm:AWS_REGION:XXXXXXXXXXXX:certificate/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
-  spcert: |
-    -----BEGIN CERTIFICATE-----
-    MIIEH...
-    .
-    .
-    .
-    TRum
-    -----END CERTIFICATE-----
-  spkey: |
-    -----BEGIN PRIVATE KEY-----
-    MIIG/...
-    .
-    .
-    .
-    ...6QT
-    -----END PRIVATE KEY-----
+ name: k8s1.syzygy.farm
+ redirects:
+   - src: /startup
+     dst: https://www.google.ca
+ acm:
+  arn: <CERTIFICATEARNHERE>
+ spcert: |
+  <SPCERTHERE>
+ spkey: |
+  <SPKEYHERE>

@@ -31,8 +31,9 @@ Terraform code to define a kubernetes cluster is kept in provider specific
 repositories for now: [aws/eks](https://github.com/pimsmath/syzygy-k8s-eks.git),
 [microsoft/aks](https://github.com/pimsmath/syzygy-k8s-aks.git) .
 
-Organizationally we create instances using to allow shared state
+Organizationally we create instances using terragrunt to allow shared state
 [terragrunt](https://github.com/gruntwork-io/terragrunt).
+
 
 ### AWS/EKS Kubernetes cluster with autoscaling and EFS
 
@@ -123,8 +124,8 @@ az aks get-credentials --resource-group RESOURCE_GROUP --name CLUSTER_NAME
 Once the K8S cluster is provisioned, check that you can interact with the cluster
 ```bash
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"19", GitVersion:"v1.19.0", GitCommit:"e19964183377d0ec2052d1f1fa930c4d7575bd50", GitTreeState:"clean", BuildDate:"2020-08-26T21:54:15Z", GoVersion:"go1.15", Compiler:"gc", Platform:"darwin/amd64"}
-Server Version: version.Info{Major:"1", Minor:"17+", GitVersion:"v1.17.9-eks-4c6976", GitCommit:"4c6976793196d70bc5cd29d56ce5440c9473648e", GitTreeState:"clean", BuildDate:"2020-07-17T18:46:04Z", GoVersion:"go1.13.9", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"22", GitVersion:"v1.22.4", GitCommit:"b695d79d4f967c403a96986f1750a35eb75e75f1", GitTreeState:"clean", BuildDate:"2021-11-17T15:48:33Z", GoVersion:"go1.16.10", Compiler:"gc", Platform:"darwin/amd64"}
+Server Version: version.Info{Major:"1", Minor:"22+", GitVersion:"v1.22.12-eks-6d3986b", GitCommit:"dade57bbf0e318a6492808cf6e276ea3956aecbf", GitTreeState:"clean", BuildDate:"2022-07-20T22:06:30Z", GoVersion:"go1.16.15", Compiler:"gc", Platform:"linux/amd64"}
 
 $ kubectl get nodes
 NAME                                       STATUS   ROLES    AGE     VERSION
@@ -141,7 +142,7 @@ configuration.
 Install the latest release of [Helm](https://helm.sh/).
 ```bash
 $ helm version
-version.BuildInfo{Version:"v3.3.0", GitCommit:"8a4aeec08d67a7b84472007529e8097ec3742105", GitTreeState:"dirty", GoVersion:"go1.14.6"}
+version.BuildInfo{Version:"v3.9.2", GitCommit:"1addefbfe665c350f4daf868a9adc5600cc064fd", GitTreeState:"clean", GoVersion:"go1.18.4"}
 ```
 
 ## AutoScaler
@@ -166,18 +167,21 @@ module](https://github.com/pimsmath/k8s-syzygy-eks/blob/ba0f23703a9653135df4a124
 # autoscaler.yaml
 awsRegion: ca-central-1
 
+cloudConfigPath: ''
+
 rbac:
   create: true
   serviceAccount:
     # This value should match local.k8s_service_account_name in locals.tf
-    name: cluster-autoscaler-aws-cluster-autoscaler-chart
+    name: cluster-autoscaler
     annotations:
       # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
-      eks.amazonaws.com/role-arn: "arn:aws:iam::<account-id>:role/cluster-autoscaler"
+      eks.amazonaws.com/role-arn: "arn:aws:iam::USERIDHERE:role/syzygy-eks-f7LISI3z-cluster_autoscaler-role"
 
 autoDiscovery:
-  clusterName: <cluster-id>
+  clusterName: "syzygy-eks-f7LISI3z"
   enabled: true
+
 ```
 
 Install the chart
@@ -194,7 +198,12 @@ dependent charts we will need
 ([zero-to-jupyterhub](https://jupyterhub.github.io/helm-chart) and
 [efs-provisioner](https://kubernetes-charts.storage.googleapis.com/).
 ```bash
-$ helm dependency update
+$ helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+$ helm repo add jetstack https://charts.jetstack.io
+$ helm repo add autoscaler https://kubernetes.github.io/autoscaler
+$ helm repo add isotoma https://kubernetes.github.io/charts
+$ helm update
+$ cd one-two-syzygy && helm dependency update && cd ..
 ```
 
 ### z2jh options 

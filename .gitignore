@@ -158,3 +158,5 @@ jupyterhub-*
 
 # Terraform environment variables
 infrastructure/terraform/aks/k8s2/env.auto.tfvars.json
+
+.terraform.lock.hcl
